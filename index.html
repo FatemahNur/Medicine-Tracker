@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Medicine Tracker</title>
+  <style>
+    body { font-family: Arial; padding: 20px; max-width: 600px; margin: auto; }
+    input, textarea, button { display: block; margin: 10px 0; width: 100%; padding: 8px; }
+  </style>
+</head>
+<body>
+  <h1>Medicine Tracker Form</h1>
+  <form id="trackerForm">
+    <input type="text" placeholder="Medicine Name" id="name" required />
+    <input type="text" placeholder="Dosage" id="dosage" required />
+    <input type="date" id="date" required />
+    <input type="time" id="time" required />
+    <input type="number" placeholder="Duration (months)" id="duration" required />
+    <textarea placeholder="Side Effects" id="effects"></textarea>
+    <label><input type="checkbox" id="taken" /> Taken</label>
+    <button type="submit">Submit</button>
+  </form>
+
+  <p id="responseMsg"></p>
+
+  <script>
+    const form = document.getElementById('trackerForm');
+    const msg = document.getElementById('responseMsg');
+
+    form.addEventListener('submit', async function (e) {
+      e.preventDefault();
+
+      const data = {
+        name: document.getElementById('name').value,
+        dosage: document.getElementById('dosage').value,
+        date: document.getElementById('date').value,
+        time: document.getElementById('time').value,
+        duration: document.getElementById('duration').value,
+        effects: document.getElementById('effects').value,
+        taken: document.getElementById('taken').checked ? 'Yes' : 'No'
+      };
+
+      const url = "PASTE_YOUR_WEB_APP_URL_HERE"; // Replace with your Apps Script web app URL
+
+      try {
+        const res = await fetch(url, {
+          method: 'POST',
+          body: JSON.stringify(data),
+          headers: { 'Content-Type': 'application/json' }
+        });
+        msg.innerText = "✅ Submitted!";
+        form.reset();
+      } catch (err) {
+        msg.innerText = "❌ Error submitting data";
+        console.error(err);
+      }
+    });
+  </script>
+</body>
+</html>
