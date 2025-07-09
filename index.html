@@ -1,40 +1,56 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <title>Medicine Tracker</title>
-  <link rel="stylesheet" href="style.css">
+  <title>Simple Medicine Tracker</title>
 </head>
 <body>
-  <div class="container">
-    <h1>Medicine Tracker</h1>
-    <form id="medicineForm">
-      <input type="text" id="name" placeholder="Medicine Name" required>
-      <input type="text" id="dosage" placeholder="Dosage" required>
-      <input type="date" id="date" required>
-      <input type="time" id="time" required>
-      <input type="number" id="duration" placeholder="Duration (months)" required>
-      <input type="text" id="effects" placeholder="Side Effects">
-      <label><input type="checkbox" id="taken"> Taken</label>
-      <button type="submit">Add</button>
-    </form>
+  <h2>Medicine Tracker Form</h2>
+  <form id="trackerForm">
+    <input type="text" id="name" placeholder="Medicine Name" required><br>
+    <input type="text" id="dosage" placeholder="Dosage" required><br>
+    <input type="date" id="date" required><br>
+    <input type="time" id="time" required><br>
+    <input type="number" id="duration" placeholder="Duration (months)" required><br>
+    <input type="text" id="effects" placeholder="Side Effects"><br>
+    <label><input type="checkbox" id="taken"> Taken</label><br><br>
+    <button type="submit">Submit</button>
+  </form>
 
-    <table id="medicineTable">
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Dosage</th>
-          <th>Date</th>
-          <th>Time</th>
-          <th>Duration</th>
-          <th>Side Effects</th>
-          <th>Status</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-  </div>
+  <p id="status"></p>
 
-  <script src="script.js"></script>
+  <script>
+    const form = document.getElementById('trackerForm');
+    const status = document.getElementById('status');
+
+    form.addEventListener('submit', async function (e) {
+      e.preventDefault();
+
+      const data = {
+        name: document.getElementById('name').value,
+        dosage: document.getElementById('dosage').value,
+        date: document.getElementById('date').value,
+        time: document.getElementById('time').value,
+        duration: document.getElementById('duration').value,
+        effects: document.getElementById('effects').value,
+        taken: document.getElementById('taken').checked ? "Yes" : "No"
+      };
+
+      const url = "https://script.google.com/macros/s/AKfycbzZussVqdVSLCFcdttuPNzW62h7_HI8CIL6dLQU6qU69Zd7920QqnbdgeeAy_CXKFVt/exec"; // Use the one you copied earlier
+
+      try {
+        const response = await fetch(url, {
+          method: "POST",
+          body: JSON.stringify(data),
+          headers: { "Content-Type": "application/json" }
+        });
+        const result = await response.text();
+        status.textContent = "✅ " + result;
+        form.reset();
+      } catch (err) {
+        console.error(err);
+        status.textContent = "❌ Error submitting data.";
+      }
+    });
+  </script>
 </body>
 </html>
