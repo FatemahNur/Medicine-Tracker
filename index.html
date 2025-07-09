@@ -6,13 +6,13 @@
 <body>
   <h2>Medicine Tracker Form</h2>
   <form id="trackerForm">
-    <input type="text" id="name" placeholder="Medicine Name" required><br>
-    <input type="text" id="dosage" placeholder="Dosage" required><br>
-    <input type="date" id="date" required><br>
-    <input type="time" id="time" required><br>
-    <input type="number" id="duration" placeholder="Duration (months)" required><br>
-    <input type="text" id="effects" placeholder="Side Effects"><br>
-    <label><input type="checkbox" id="taken"> Taken</label><br><br>
+    <input type="text" name="name" placeholder="Medicine Name" required><br>
+    <input type="text" name="dosage" placeholder="Dosage" required><br>
+    <input type="date" name="date" required><br>
+    <input type="time" name="time" required><br>
+    <input type="number" name="duration" placeholder="Duration (months)" required><br>
+    <input type="text" name="effects" placeholder="Side Effects"><br>
+    <label><input type="checkbox" name="taken"> Taken</label><br><br>
     <button type="submit">Submit</button>
   </form>
 
@@ -22,33 +22,25 @@
     const form = document.getElementById('trackerForm');
     const status = document.getElementById('status');
 
-    form.addEventListener('submit', async function (e) {
+    form.addEventListener('submit', function (e) {
       e.preventDefault();
 
-      const data = {
-        name: document.getElementById('name').value,
-        dosage: document.getElementById('dosage').value,
-        date: document.getElementById('date').value,
-        time: document.getElementById('time').value,
-        duration: document.getElementById('duration').value,
-        effects: document.getElementById('effects').value,
-        taken: document.getElementById('taken').checked ? "Yes" : "No"
-      };
+      const formData = new FormData(form);
+      if (!formData.has("taken")) formData.append("taken", "No");
 
-      const url = "https://script.google.com/macros/s/AKfycbzf6xo6Wu1myQGc4gpQHf_hRUrnoySeDqoYudmirIGDTusVfJCaCwn_2q10nYpTy4dJ/exec";
-      try {
-        const response = await fetch(url, {
-          method: "POST",
-          body: JSON.stringify(data),
-          headers: { "Content-Type": "application/json" }
-        });
-        const result = await response.text();
+      fetch("https://script.google.com/macros/s/AKfycbwOO1kWGwOzFGVGXTmVQp2GE83pgx7wlw_pC5tWUv5tt3mgSM5pR8vqzm4nxO3Olu1F/exec", {
+        method: "POST",
+        body: new URLSearchParams(formData),
+      })
+      .then(response => response.text())
+      .then(result => {
         status.textContent = "✅ " + result;
         form.reset();
-      } catch (err) {
-        console.error(err);
+      })
+      .catch(error => {
+        console.error("Error:", error);
         status.textContent = "❌ Error submitting data.";
-      }
+      });
     });
   </script>
 </body>
