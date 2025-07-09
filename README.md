@@ -1,4 +1,4 @@
-# 💊 Medicine Tracker
+# 💊 Medicine Intake Tracker
 
 A simple and easy-to-use medicine tracking web app built with **HTML** and backed by **Google Sheets** using Google Apps Script.
 
