@@ -2,11 +2,11 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Medicine Tracker</title>
+  <title>Simple Medicine Tracker</title>
   <style>
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #f9f9f9;
+      background-color: #f7f9fc;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -15,47 +15,49 @@
     }
 
     .container {
-      background-color: white;
-      padding: 30px 40px;
+      background-color: #fff;
+      padding: 30px;
       border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      width: 90%;
       max-width: 400px;
-      width: 100%;
     }
 
     h2 {
       text-align: center;
       color: #333;
-      margin-bottom: 20px;
     }
 
-    input[type="text"],
-    input[type="number"],
-    input[type="date"],
-    input[type="time"] {
+    form input[type="text"],
+    form input[type="number"],
+    form input[type="date"],
+    form input[type="time"] {
       width: 100%;
       padding: 10px;
-      margin: 8px 0;
+      margin: 10px 0;
       border: 1px solid #ccc;
       border-radius: 6px;
+      box-sizing: border-box;
     }
 
     label {
       display: block;
-      margin: 10px 0 5px;
-      font-weight: bold;
+      margin-top: 10px;
+      font-weight: 500;
+      color: #333;
     }
 
-    .checkbox-container {
+    .checkbox-group {
       margin-top: 10px;
     }
 
     button {
       width: 100%;
-      padding: 10px;
-      background-color: #28a745;
-      border: none;
+      padding: 12px;
+      margin-top: 20px;
+      background-color: #007BFF;
       color: white;
+      border: none;
       font-size: 16px;
       border-radius: 6px;
       cursor: pointer;
@@ -63,7 +65,7 @@
     }
 
     button:hover {
-      background-color: #218838;
+      background-color: #0056b3;
     }
 
     #status {
@@ -83,70 +85,49 @@
 </head>
 <body>
   <div class="container">
-    <h2>Medicine Tracker</h2>
+    <h2>Medicine Tracker Form</h2>
     <form id="trackerForm">
-      <label for="name">Medicine Name</label>
-      <input type="text" id="name" required>
-
-      <label for="dosage">Dosage</label>
-      <input type="text" id="dosage" required>
-
-      <label for="date">Date</label>
-      <input type="date" id="date" required>
-
-      <label for="time">Time</label>
-      <input type="time" id="time" required>
-
-      <label for="duration">Duration (months)</label>
-      <input type="number" id="duration" required>
-
-      <label for="effects">Side Effects</label>
-      <input type="text" id="effects">
-
-      <div class="checkbox-container">
-        <label><input type="checkbox" id="taken"> Taken</label>
+      <input type="text" name="name" placeholder="Medicine Name" required>
+      <input type="text" name="dosage" placeholder="Dosage" required>
+      <input type="date" name="date" required>
+      <input type="time" name="time" required>
+      <input type="number" name="duration" placeholder="Duration (months)" required>
+      <input type="text" name="effects" placeholder="Side Effects">
+      
+      <div class="checkbox-group">
+        <label><input type="checkbox" name="taken"> Taken</label>
       </div>
-
+      
       <button type="submit">Submit</button>
-      <p id="status"></p>
     </form>
+    <p id="status"></p>
   </div>
 
   <script>
     const form = document.getElementById('trackerForm');
     const status = document.getElementById('status');
 
-    form.addEventListener('submit', async function (e) {
+    form.addEventListener('submit', function (e) {
       e.preventDefault();
 
-      const data = {
-        name: document.getElementById('name').value,
-        dosage: document.getElementById('dosage').value,
-        date: document.getElementById('date').value,
-        time: document.getElementById('time').value,
-        duration: document.getElementById('duration').value,
-        effects: document.getElementById('effects').value,
-        taken: document.getElementById('taken').checked ? "Yes" : "No"
-      };
+      const formData = new FormData(form);
+      if (!formData.has("taken")) formData.append("taken", "No");
 
-      const url = "https://script.google.com/macros/s/AKfycbwOO1kWGwOzFGVGXTmVQp2GE83pgx7wlw_pC5tWUv5tt3mgSM5pR8vqzm4nxO3Olu1F/exec";
-
-      try {
-        const response = await fetch(url, {
-          method: "POST",
-          body: JSON.stringify(data),
-          headers: { "Content-Type": "application/json" }
-        });
-
-        const result = await response.text();
+      fetch("https://script.google.com/macros/s/AKfycbwOO1kWGwOzFGVGXTmVQp2GE83pgx7wlw_pC5tWUv5tt3mgSM5pR8vqzm4nxO3Olu1F/exec", {
+        method: "POST",
+        body: new URLSearchParams(formData),
+      })
+      .then(response => response.text())
+      .then(result => {
         status.textContent = "✅ " + result;
         status.className = "success";
         form.reset();
-      } catch (err) {
-        console.error(err);
+      })
+      .catch(error => {
+        console.error("Error:", error);
         status.textContent = "❌ Error submitting data.";
         status.className = "error";
-      }
+      });
     });
   </script>
 </body>
